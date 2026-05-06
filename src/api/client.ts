@@ -1,4 +1,5 @@
 import type { ApiErrorPayload } from "./types";
+import { getEnvValue } from "../config/runtime";
 
 export class ApiError extends Error {
   status: number;
@@ -10,14 +11,13 @@ export class ApiError extends Error {
   }
 }
 
-const env = import.meta.env as Record<string, string | undefined>;
-export const API_BASE_URL = env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
-export const USE_MOCKS = env.VITE_USE_MOCKS !== "false" && !API_BASE_URL;
-export const DEV_ROLE = env.VITE_DEV_USER_ROLE === "manager" ? "manager" : "employee";
+export const API_BASE_URL = getEnvValue("VITE_API_BASE_URL")?.replace(/\/$/, "") ?? "";
+export const USE_MOCKS = getEnvValue("VITE_USE_MOCKS") !== "false" && !API_BASE_URL;
+export const DEV_ROLE = getEnvValue("VITE_DEV_USER_ROLE") === "manager" ? "manager" : "employee";
 const AUTH_TOKEN_KEY = "pulse_tickets_auth_token";
 
 export function getAuthToken(): string {
-  return window.localStorage.getItem(AUTH_TOKEN_KEY) ?? env.VITE_DEV_AUTH_TOKEN ?? "";
+  return window.localStorage.getItem(AUTH_TOKEN_KEY) ?? getEnvValue("VITE_DEV_AUTH_TOKEN") ?? "";
 }
 
 export function hasAuthToken(): boolean {

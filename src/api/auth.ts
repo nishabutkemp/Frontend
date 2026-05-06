@@ -1,8 +1,8 @@
 import { apiRequest, setAuthToken } from "./client";
+import { getEnvValue } from "../config/runtime";
 import type { User } from "./types";
 
-const env = import.meta.env as Record<string, string | undefined>;
-const LOGIN_PATH = env.VITE_AUTH_LOGIN_PATH ?? "/auth/login";
+const LOGIN_PATH = getEnvValue("VITE_AUTH_LOGIN_PATH") ?? "/auth/login";
 
 type LoginResponse = {
   accessToken?: string;
