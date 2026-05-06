@@ -1,4 +1,4 @@
-import { Bell, BarChart3, Home, Inbox, PlusCircle, Sparkles } from "lucide-react";
+import { BarChart3, Home, Inbox, LogOut, PlusCircle, Sparkles } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useApp } from "../../app/providers";
 import type { UserRole } from "../../api/types";
@@ -17,7 +17,7 @@ const nav = {
 };
 
 export function AppLayout({ role }: { role: UserRole }) {
-  const { user } = useApp();
+  const { user, logout } = useApp();
   const items = nav[role];
 
   return (
@@ -44,7 +44,7 @@ export function AppLayout({ role }: { role: UserRole }) {
       </aside>
       <div className="workspace">
         <header className="topbar">
-          <button className="icon-button" aria-label="Уведомления"><Bell size={19} /></button>
+          <button className="icon-button" aria-label="Выйти" title="Выйти" onClick={logout}><LogOut size={19} /></button>
           <div className="avatar" aria-label={user?.fullName}>{user?.initials}</div>
         </header>
         <main className="content">

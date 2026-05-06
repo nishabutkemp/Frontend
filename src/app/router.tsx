@@ -3,6 +3,7 @@ import { useApp } from "./providers";
 import { AppLayout } from "../components/layout/AppLayout";
 import { LoadingState, ErrorState } from "../components/ui/States";
 import { AccessDeniedPage } from "../pages/AccessDeniedPage";
+import { LoginPage } from "../pages/LoginPage";
 import { EmployeeHomePage } from "../features/employee/EmployeeHomePage";
 import { CreateTicketPage } from "../features/employee/CreateTicketPage";
 import { MyTicketsPage } from "../features/employee/MyTicketsPage";
@@ -15,6 +16,7 @@ import type { UserRole } from "../api/types";
 function RootRedirect() {
   const { user, loading, error, reloadUser } = useApp();
   if (loading) return <LoadingState label="Получаем текущего пользователя..." />;
+  if (!user && !error) return <Navigate to="/login" replace />;
   if (error) return <ErrorState message={error} onRetry={reloadUser} />;
   return <Navigate to={user?.role === "manager" ? "/manager/groups" : "/employee"} replace />;
 }
@@ -22,6 +24,7 @@ function RootRedirect() {
 function RoleLayout({ role }: { role: UserRole }) {
   const { user, loading, error, reloadUser } = useApp();
   if (loading) return <LoadingState label="Получаем текущего пользователя..." />;
+  if (!user && !error) return <Navigate to="/login" replace />;
   if (error) return <ErrorState message={error} onRetry={reloadUser} />;
   if (user?.role !== role) return <AccessDeniedPage />;
   return <AppLayout role={role} />;
@@ -29,6 +32,7 @@ function RoleLayout({ role }: { role: UserRole }) {
 
 export const router = createBrowserRouter([
   { path: "/", element: <RootRedirect /> },
+  { path: "/login", element: <LoginPage /> },
   {
     path: "/employee",
     element: <RoleLayout role="employee" />,

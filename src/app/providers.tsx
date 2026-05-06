@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { clearAuthToken, hasAuthToken, USE_MOCKS } from "../api/client";
 import { getMe } from "../api/me";
 import type { User } from "../api/types";
 
@@ -7,6 +8,8 @@ type AppContextValue = {
   loading: boolean;
   error: string | null;
   reloadUser: () => Promise<void>;
+  setAuthenticatedUser: (user: User | null) => void;
+  logout: () => void;
   toast: string | null;
   showToast: (message: string) => void;
 };
@@ -20,11 +23,24 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   const [toast, setToast] = useState<string | null>(null);
 
   const reloadUser = async () => {
+    if (!hasAuthToken()) {
+      setUser(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
       setUser(await getMe());
     } catch (err) {
+      setUser(null);
+      if (!USE_MOCKS && err instanceof Error && "status" in err && err.status === 401) {
+        clearAuthToken();
+        setError(null);
+        return;
+      }
       setError(err instanceof Error ? err.message : "Не удалось получить текущего пользователя.");
     } finally {
       setLoading(false);
@@ -40,7 +56,16 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     window.setTimeout(() => setToast(null), 2800);
   };
 
-  const value = useMemo(() => ({ user, loading, error, reloadUser, toast, showToast }), [user, loading, error, toast]);
+  const logout = () => {
+    clearAuthToken();
+    setUser(null);
+    setError(null);
+  };
+
+  const value = useMemo(
+    () => ({ user, loading, error, reloadUser, setAuthenticatedUser: setUser, logout, toast, showToast }),
+    [user, loading, error, toast],
+  );
 
   return (
     <AppContext.Provider value={value}>

@@ -14,11 +14,28 @@ const env = import.meta.env as Record<string, string | undefined>;
 export const API_BASE_URL = env.VITE_API_BASE_URL?.replace(/\/$/, "") ?? "";
 export const USE_MOCKS = env.VITE_USE_MOCKS !== "false" && !API_BASE_URL;
 export const DEV_ROLE = env.VITE_DEV_USER_ROLE === "manager" ? "manager" : "employee";
+const AUTH_TOKEN_KEY = "pulse_tickets_auth_token";
+
+export function getAuthToken(): string {
+  return window.localStorage.getItem(AUTH_TOKEN_KEY) ?? env.VITE_DEV_AUTH_TOKEN ?? "";
+}
+
+export function hasAuthToken(): boolean {
+  return USE_MOCKS || Boolean(getAuthToken());
+}
+
+export function setAuthToken(token: string) {
+  window.localStorage.setItem(AUTH_TOKEN_KEY, token);
+}
+
+export function clearAuthToken() {
+  window.localStorage.removeItem(AUTH_TOKEN_KEY);
+}
 
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   headers.set("Content-Type", "application/json");
-  const token = env.VITE_DEV_AUTH_TOKEN;
+  const token = getAuthToken();
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
   }

@@ -14,8 +14,9 @@ npm run dev
 Create `.env` from `.env.example`.
 
 - `VITE_API_BASE_URL` - backend base URL, for example `https://api.pulsetickets.internal/v1`.
+- `VITE_AUTH_LOGIN_PATH` - login endpoint relative to API base URL, default `/auth/login`.
 - `VITE_USE_MOCKS` - `true` by default when no API URL is set.
-- `VITE_DEV_AUTH_TOKEN` - optional bearer token for real API calls.
+- `VITE_DEV_AUTH_TOKEN` - optional bearer token fallback for real API calls.
 - `VITE_DEV_USER_ROLE` - `employee` or `manager` for mock mode.
 
 Routes:
