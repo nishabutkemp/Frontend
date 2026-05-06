@@ -33,9 +33,9 @@ export function AnalyticsPage() {
       <div className="metrics-grid">
         <Metric title="Всего групп" value={totalGroups} />
         <Metric title="Всего тикетов" value={totalTickets} />
-        <Metric title="Группы Open" value={data.groupsByStatus.open} />
-        <Metric title="Группы In review" value={data.groupsByStatus.in_review} />
-        <Metric title="Группы Resolved" value={data.groupsByStatus.resolved} />
+        <Metric title="Открытые группы" value={data.groupsByStatus.open} />
+        <Metric title="Группы на рассмотрении" value={data.groupsByStatus.in_review} />
+        <Metric title="Решенные группы" value={data.groupsByStatus.resolved} />
       </div>
       <Card>
         <h3>Топ повторяющихся проблем</h3>

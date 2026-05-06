@@ -1,4 +1,4 @@
-import { Layers, Users } from "lucide-react";
+import { Layers, Users, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { TicketGroup } from "../../api/types";
 import { Button } from "../../components/ui/Button";
@@ -6,10 +6,19 @@ import { Card } from "../../components/ui/Card";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { excerpt, formatDate } from "../../utils/format";
 
-export function TicketGroupCard({ group }: { group: TicketGroup }) {
+export function TicketGroupCard({ group, onHide }: { group: TicketGroup; onHide: (groupId: string) => void }) {
   const navigate = useNavigate();
   return (
     <Card className="group-card">
+      <button
+        type="button"
+        className="icon-button group-hide-button"
+        aria-label="Скрыть группу"
+        title="Скрыть группу"
+        onClick={() => onHide(group.id)}
+      >
+        <X size={17} />
+      </button>
       <div className="group-icon"><Layers size={22} /></div>
       <div className="group-content">
         <div className="card-title-row">

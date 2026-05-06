@@ -42,7 +42,7 @@ let tickets: Ticket[] = [
     resolvedAt: null,
     history: [
       history("h1", "ticket_created", "Тикет создан", "2026-05-06T09:15:00Z", null, "open"),
-      history("h2", "group_status_changed", "Статус изменен на In review", "2026-05-06T12:00:00Z", "open", "in_review"),
+      history("h2", "group_status_changed", "Статус изменен на «На рассмотрении»", "2026-05-06T12:00:00Z", "open", "in_review"),
       history("h3", "manager_comment_updated", "Добавлен комментарий менеджера", "2026-05-06T12:30:00Z", null, null),
     ],
   },
@@ -78,7 +78,7 @@ let tickets: Ticket[] = [
     resolvedAt: "2026-05-04T16:10:00Z",
     history: [
       history("h5", "ticket_created", "Тикет создан", "2026-05-03T14:20:00Z", null, "open"),
-      history("h6", "group_status_changed", "Статус изменен на Resolved", "2026-05-04T16:10:00Z", "open", "resolved"),
+      history("h6", "group_status_changed", "Статус изменен на «Решена»", "2026-05-04T16:10:00Z", "open", "resolved"),
     ],
   },
   {
@@ -291,5 +291,5 @@ export const mockApi = {
 };
 
 function statusLabel(status: TicketStatus) {
-  return status === "open" ? "Open" : status === "in_review" ? "In review" : "Resolved";
+  return status === "open" ? "Открыта" : status === "in_review" ? "На рассмотрении" : "Решена";
 }

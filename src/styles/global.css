@@ -541,10 +541,29 @@ a {
 }
 
 .group-card {
+  position: relative;
   display: grid;
   grid-template-columns: 48px 1fr auto;
   align-items: center;
   gap: 18px;
+  padding-right: 58px;
+}
+
+.group-hide-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  color: #667085;
+}
+
+.group-hide-button:hover {
+  color: #b42318;
+  border-color: #fecaca;
+  background: #fff7f7;
 }
 
 .group-icon {
@@ -588,31 +607,11 @@ a {
   background: #fff;
 }
 
-.status-list,
 .comment-form,
 .related-list,
 .analytics-list {
   display: grid;
   gap: 12px;
-}
-
-.status-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: #fff;
-  color: #475467;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-.status-option.active {
-  border-color: #bfdbfe;
-  background: var(--blue-soft);
-  color: var(--blue);
 }
 
 .related-row {

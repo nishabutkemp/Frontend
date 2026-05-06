@@ -10,7 +10,7 @@ const nav = {
     { to: "/employee/tickets", label: "Мои тикеты", icon: Inbox },
   ],
   manager: [
-    { to: "/manager/groups", label: "Все тикеты", icon: Inbox },
+    { to: "/manager/groups", label: "Группы тикетов", icon: Inbox },
     { to: "/manager/analytics", label: "Аналитика", icon: BarChart3 },
   ],
 };

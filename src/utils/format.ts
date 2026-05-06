@@ -1,9 +1,9 @@
 import type { TicketStatus } from "../api/types";
 
 export const statusOptions: Array<{ value: TicketStatus; label: string }> = [
-  { value: "open", label: "Open" },
-  { value: "in_review", label: "In review" },
-  { value: "resolved", label: "Resolved" },
+  { value: "open", label: "Открыта" },
+  { value: "in_review", label: "На рассмотрении" },
+  { value: "resolved", label: "Решена" },
 ];
 
 export function statusLabel(status: TicketStatus): string {
