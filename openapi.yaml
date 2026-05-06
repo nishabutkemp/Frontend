@@ -1,0 +1,1166 @@
+openapi: 3.1.0
+info:
+  title: Pulse Tickets API
+  version: 1.0.0
+  summary: MVP API for private employee tickets and AI-grouped manager workflows
+  description: |
+    OpenAPI contract for Pulse Tickets MVP.
+    All tickets are private by default. Employees can access only their own tickets.
+    Managers work with AI-generated ticket groups and can update group status and manager comment,
+    which are reflected on related tickets.
+servers:
+  - url: https://api.pulsetickets.internal/v1
+    description: Production
+  - url: https://staging-api.pulsetickets.internal/v1
+    description: Staging
+security:
+  - BearerAuth: []
+tags:
+  - name: Auth
+  - name: AI
+  - name: Employee Tickets
+  - name: Manager Ticket Groups
+  - name: Manager Analytics
+paths:
+  /me:
+    get:
+      tags:
+        - Auth
+      summary: Get current authenticated user
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              example:
+                id: usr_01JQ7M8R9Q3D3KB8Y2MB9F0F11
+                fullName: Ivan Petrov
+                initials: IP
+                role: employee
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /ai/enhance-ticket-description:
+    post:
+      tags:
+        - AI
+      summary: Enhance employee ticket description with AI
+      operationId: enhanceTicketDescription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnhanceTicketDescriptionRequest'
+            example:
+              originalText: "Our VPN disconnects several times a day and I lose access to internal tools."
+      responses:
+        '200':
+          description: AI-enhanced ticket description
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnhanceTicketDescriptionResponse'
+              example:
+                originalText: "Our VPN disconnects several times a day and I lose access to internal tools."
+                enhancedText: "[AI-enhanced] VPN connection disconnects multiple times per day, causing repeated loss of access to internal tools and interrupting work."
+                aiEnhanced: true
+                displayPrefix: "[AI-enhanced]"
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /tickets:
+    post:
+      tags:
+        - Employee Tickets
+      summary: Create a private ticket
+      operationId: createTicket
+      description: |
+        Creates a new private ticket for the authenticated employee.
+        If `aiEnhanced` is true, the submitted description is treated as AI-enhanced text.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTicketRequest'
+            example:
+              title: "VPN disconnects during the day"
+              description: "[AI-enhanced] VPN connection disconnects multiple times per day, causing repeated loss of access to internal tools and interrupting work."
+              originalDescription: "Our VPN disconnects several times a day and I lose access to internal tools."
+              aiEnhanced: true
+      responses:
+        '201':
+          description: Ticket created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+              example:
+                id: tkt_01JQ7N4JX2TZZM3C4X9N8H6G5B
+                number: PT-1042
+                title: "VPN disconnects during the day"
+                description: "[AI-enhanced] VPN connection disconnects multiple times per day, causing repeated loss of access to internal tools and interrupting work."
+                originalDescription: "Our VPN disconnects several times a day and I lose access to internal tools."
+                aiEnhanced: true
+                status: open
+                managerComment: null
+                author:
+                  id: usr_01JQ7M8R9Q3D3KB8Y2MB9F0F11
+                  fullName: Ivan Petrov
+                  initials: IP
+                  role: employee
+                groupId: grp_01JQ7Q2M0SFFAHK4J8GQ1R7D6N
+                createdAt: '2026-05-06T09:15:00Z'
+                updatedAt: '2026-05-06T09:15:00Z'
+                resolvedAt: null
+                history:
+                  - id: the_01JQ7N4K2E57ZPE5F1R4A9YQF8
+                    type: ticket_created
+                    label: Ticket created
+                    fromStatus: null
+                    toStatus: open
+                    createdAt: '2026-05-06T09:15:00Z'
+                    actor:
+                      type: user
+                      id: usr_01JQ7M8R9Q3D3KB8Y2MB9F0F11
+                      displayName: Ivan Petrov
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /tickets/my:
+    get:
+      tags:
+        - Employee Tickets
+      summary: List current employee tickets
+      operationId: listMyTickets
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: status
+          in: query
+          description: Filter by one or more ticket statuses
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/TicketStatus'
+          style: form
+          explode: false
+          example: open,in_review
+        - name: query
+          in: query
+          description: Full-text search across ticket title and description
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+          example: vpn
+      responses:
+        '200':
+          description: Paginated list of current employee tickets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyTicketsListResponse'
+              example:
+                items:
+                  - id: tkt_01JQ7N4JX2TZZM3C4X9N8H6G5B
+                    number: PT-1042
+                    title: "VPN disconnects during the day"
+                    description: "[AI-enhanced] VPN connection disconnects multiple times per day, causing repeated loss of access to internal tools and interrupting work."
+                    originalDescription: "Our VPN disconnects several times a day and I lose access to internal tools."
+                    aiEnhanced: true
+                    status: in_review
+                    managerComment: "We identified several similar reports and are checking VPN gateway stability."
+                    author:
+                      id: usr_01JQ7M8R9Q3D3KB8Y2MB9F0F11
+                      fullName: Ivan Petrov
+                      initials: IP
+                      role: employee
+                    groupId: grp_01JQ7Q2M0SFFAHK4J8GQ1R7D6N
+                    createdAt: '2026-05-06T09:15:00Z'
+                    updatedAt: '2026-05-06T12:30:00Z'
+                    resolvedAt: null
+                    history: []
+                meta:
+                  page: 1
+                  pageSize: 20
+                  totalItems: 1
+                  totalPages: 1
+                  hasNextPage: false
+                  hasPreviousPage: false
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /tickets/my/{ticketId}:
+    get:
+      tags:
+        - Employee Tickets
+      summary: Get current employee ticket details
+      operationId: getMyTicketById
+      parameters:
+        - $ref: '#/components/parameters/TicketId'
+      responses:
+        '200':
+          description: Ticket details for the authenticated employee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+              example:
+                id: tkt_01JQ7N4JX2TZZM3C4X9N8H6G5B
+                number: PT-1042
+                title: "VPN disconnects during the day"
+                description: "[AI-enhanced] VPN connection disconnects multiple times per day, causing repeated loss of access to internal tools and interrupting work."
+                originalDescription: "Our VPN disconnects several times a day and I lose access to internal tools."
+                aiEnhanced: true
+                status: in_review
+                managerComment: "We identified several similar reports and are checking VPN gateway stability."
+                author:
+                  id: usr_01JQ7M8R9Q3D3KB8Y2MB9F0F11
+                  fullName: Ivan Petrov
+                  initials: IP
+                  role: employee
+                groupId: grp_01JQ7Q2M0SFFAHK4J8GQ1R7D6N
+                createdAt: '2026-05-06T09:15:00Z'
+                updatedAt: '2026-05-06T12:30:00Z'
+                resolvedAt: null
+                history:
+                  - id: the_01JQ7N4K2E57ZPE5F1R4A9YQF8
+                    type: ticket_created
+                    label: Ticket created
+                    fromStatus: null
+                    toStatus: open
+                    createdAt: '2026-05-06T09:15:00Z'
+                    actor:
+                      type: user
+                      id: usr_01JQ7M8R9Q3D3KB8Y2MB9F0F11
+                      displayName: Ivan Petrov
+                  - id: the_01JQ7R7ZBRN6SR7E1P0YF8M6N9
+                    type: group_status_changed
+                    label: Group status changed by manager
+                    fromStatus: open
+                    toStatus: in_review
+                    createdAt: '2026-05-06T12:00:00Z'
+                    actor:
+                      type: user
+                      id: usr_01JQ7MEXY9T6NB2FPE8JY0GQ2M
+                      displayName: Anna Sidorova
+                  - id: the_01JQ7R90Y8JNC4GJXAK6FEW1TQ
+                    type: manager_comment_updated
+                    label: Manager comment updated
+                    fromStatus: null
+                    toStatus: null
+                    createdAt: '2026-05-06T12:30:00Z'
+                    actor:
+                      type: user
+                      id: usr_01JQ7MEXY9T6NB2FPE8JY0GQ2M
+                      displayName: Anna Sidorova
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /manager/ticket-groups:
+    get:
+      tags:
+        - Manager Ticket Groups
+      summary: List AI-grouped ticket clusters for managers
+      operationId: listManagerTicketGroups
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: status
+          in: query
+          description: Filter by one or more group statuses
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/TicketStatus'
+          style: form
+          explode: false
+          example: open,in_review
+        - name: query
+          in: query
+          description: Search by group title, AI summary, or related ticket text
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+          example: vpn
+      responses:
+        '200':
+          description: Paginated list of AI ticket groups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketGroupListResponse'
+              example:
+                items:
+                  - id: grp_01JQ7Q2M0SFFAHK4J8GQ1R7D6N
+                    title: "Frequent VPN disconnections"
+                    aiSummary: "Multiple employees report repeated VPN disconnects that interrupt access to internal tools throughout the workday."
+                    status: in_review
+                    ticketCount: 6
+                    lastTicketCreatedAt: '2026-05-06T11:48:00Z'
+                    managerComment: "Investigating gateway stability and collecting logs."
+                    relatedTickets:
+                      - ticketId: tkt_01JQ7N4JX2TZZM3C4X9N8H6G5B
+                        authorSummary:
+                          fullName: Ivan Petrov
+                          initials: IP
+                        descriptionExcerpt: "VPN connection disconnects multiple times per day, causing repeated loss of access..."
+                        createdAt: '2026-05-06T09:15:00Z'
+                        aiEnhanced: true
+                        status: in_review
+                    createdAt: '2026-05-06T09:20:00Z'
+                    updatedAt: '2026-05-06T12:30:00Z'
+                meta:
+                  page: 1
+                  pageSize: 20
+                  totalItems: 1
+                  totalPages: 1
+                  hasNextPage: false
+                  hasPreviousPage: false
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /manager/ticket-groups/{groupId}:
+    get:
+      tags:
+        - Manager Ticket Groups
+      summary: Get AI ticket group details
+      operationId: getManagerTicketGroupById
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        '200':
+          description: Detailed AI ticket group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketGroup'
+              example:
+                id: grp_01JQ7Q2M0SFFAHK4J8GQ1R7D6N
+                title: "Frequent VPN disconnections"
+                aiSummary: "Multiple employees report repeated VPN disconnects that interrupt access to internal tools throughout the workday."
+                status: in_review
+                ticketCount: 6
+                lastTicketCreatedAt: '2026-05-06T11:48:00Z'
+                managerComment: "Investigating gateway stability and collecting logs."
+                relatedTickets:
+                  - ticketId: tkt_01JQ7N4JX2TZZM3C4X9N8H6G5B
+                    authorSummary:
+                      fullName: Ivan Petrov
+                      initials: IP
+                    descriptionExcerpt: "VPN connection disconnects multiple times per day, causing repeated loss of access..."
+                    createdAt: '2026-05-06T09:15:00Z'
+                    aiEnhanced: true
+                    status: in_review
+                  - ticketId: tkt_01JQ7Q7W4T7EWV5YJ7C4M1XZ3R
+                    authorSummary:
+                      fullName: Olga Smirnova
+                      initials: OS
+                    descriptionExcerpt: "VPN drops every 20 to 30 minutes after morning login."
+                    createdAt: '2026-05-06T11:48:00Z'
+                    aiEnhanced: false
+                    status: in_review
+                createdAt: '2026-05-06T09:20:00Z'
+                updatedAt: '2026-05-06T12:30:00Z'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /manager/ticket-groups/{groupId}/status:
+    patch:
+      tags:
+        - Manager Ticket Groups
+      summary: Update AI ticket group status
+      operationId: updateManagerTicketGroupStatus
+      description: |
+        Updates the group status and propagates the resulting status to all related tickets.
+        A history event is added to the group-related tickets.
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTicketGroupStatusRequest'
+            example:
+              status: resolved
+      responses:
+        '200':
+          description: Group status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketGroup'
+              example:
+                id: grp_01JQ7Q2M0SFFAHK4J8GQ1R7D6N
+                title: "Frequent VPN disconnections"
+                aiSummary: "Multiple employees report repeated VPN disconnects that interrupt access to internal tools throughout the workday."
+                status: resolved
+                ticketCount: 6
+                lastTicketCreatedAt: '2026-05-06T11:48:00Z'
+                managerComment: "Fix deployed to VPN gateway cluster."
+                relatedTickets:
+                  - ticketId: tkt_01JQ7N4JX2TZZM3C4X9N8H6G5B
+                    authorSummary:
+                      fullName: Ivan Petrov
+                      initials: IP
+                    descriptionExcerpt: "VPN connection disconnects multiple times per day, causing repeated loss of access..."
+                    createdAt: '2026-05-06T09:15:00Z'
+                    aiEnhanced: true
+                    status: resolved
+                createdAt: '2026-05-06T09:20:00Z'
+                updatedAt: '2026-05-06T14:00:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /manager/ticket-groups/{groupId}/comment:
+    put:
+      tags:
+        - Manager Ticket Groups
+      summary: Save current manager comment for an AI ticket group
+      operationId: saveManagerTicketGroupComment
+      description: |
+        Creates or replaces the current manager comment for the group.
+        The saved comment is reflected on all related employee tickets.
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveTicketGroupCommentRequest'
+            example:
+              managerComment: "We identified a shared VPN infrastructure issue and are rolling out a fix."
+      responses:
+        '200':
+          description: Group comment saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketGroup'
+              example:
+                id: grp_01JQ7Q2M0SFFAHK4J8GQ1R7D6N
+                title: "Frequent VPN disconnections"
+                aiSummary: "Multiple employees report repeated VPN disconnects that interrupt access to internal tools throughout the workday."
+                status: in_review
+                ticketCount: 6
+                lastTicketCreatedAt: '2026-05-06T11:48:00Z'
+                managerComment: "We identified a shared VPN infrastructure issue and are rolling out a fix."
+                relatedTickets:
+                  - ticketId: tkt_01JQ7N4JX2TZZM3C4X9N8H6G5B
+                    authorSummary:
+                      fullName: Ivan Petrov
+                      initials: IP
+                    descriptionExcerpt: "VPN connection disconnects multiple times per day, causing repeated loss of access..."
+                    createdAt: '2026-05-06T09:15:00Z'
+                    aiEnhanced: true
+                    status: in_review
+                createdAt: '2026-05-06T09:20:00Z'
+                updatedAt: '2026-05-06T13:10:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /manager/analytics/summary:
+    get:
+      tags:
+        - Manager Analytics
+      summary: Get manager dashboard summary analytics
+      operationId: getManagerAnalyticsSummary
+      responses:
+        '200':
+          description: Aggregated counts and top repeated problems
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ManagerAnalyticsSummary'
+              example:
+                groupsByStatus:
+                  open: 12
+                  in_review: 4
+                  resolved: 7
+                ticketsByStatus:
+                  open: 31
+                  in_review: 18
+                  resolved: 52
+                topRepeatedProblems:
+                  - groupId: grp_01JQ7Q2M0SFFAHK4J8GQ1R7D6N
+                    title: "Frequent VPN disconnections"
+                    ticketCount: 6
+                    status: in_review
+                    lastTicketCreatedAt: '2026-05-06T11:48:00Z'
+                  - groupId: grp_01JQ7RPKV1A87VZFH33Y8MXQH2
+                    title: "Laptop camera not detected in meetings"
+                    ticketCount: 5
+                    status: open
+                    lastTicketCreatedAt: '2026-05-06T10:05:00Z'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    TicketId:
+      name: ticketId
+      in: path
+      required: true
+      description: Ticket identifier
+      schema:
+        type: string
+        minLength: 1
+      example: tkt_01JQ7N4JX2TZZM3C4X9N8H6G5B
+    GroupId:
+      name: groupId
+      in: path
+      required: true
+      description: AI ticket group identifier
+      schema:
+        type: string
+        minLength: 1
+      example: grp_01JQ7Q2M0SFFAHK4J8GQ1R7D6N
+    Page:
+      name: page
+      in: query
+      required: false
+      description: Page number starting from 1
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: Number of items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  responses:
+    BadRequestError:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: bad_request
+              message: Request parameters are invalid.
+              details: []
+              requestId: req_01JQ7S8YNE4HC8P4R5QF54TTJM
+    UnauthorizedError:
+      description: Authentication required or invalid token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: unauthorized
+              message: Authentication is required.
+              details: []
+              requestId: req_01JQ7S8YNE4HC8P4R5QF54TTJM
+    ForbiddenError:
+      description: Access denied for current role or resource ownership
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: forbidden
+              message: You do not have access to this resource.
+              details: []
+              requestId: req_01JQ7S8YNE4HC8P4R5QF54TTJM
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: not_found
+              message: Resource not found.
+              details: []
+              requestId: req_01JQ7S8YNE4HC8P4R5QF54TTJM
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: validation_error
+              message: Validation failed.
+              details:
+                - field: description
+                  issue: must not be empty
+              requestId: req_01JQ7S8YNE4HC8P4R5QF54TTJM
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: internal_server_error
+              message: An unexpected error occurred.
+              details: []
+              requestId: req_01JQ7S8YNE4HC8P4R5QF54TTJM
+
+  schemas:
+    UserRole:
+      type: string
+      enum:
+        - employee
+        - manager
+
+    TicketStatus:
+      type: string
+      enum:
+        - open
+        - in_review
+        - resolved
+
+    ActorType:
+      type: string
+      enum:
+        - user
+        - system
+        - ai
+
+    TicketHistoryEventType:
+      type: string
+      enum:
+        - ticket_created
+        - group_assigned
+        - group_status_changed
+        - manager_comment_updated
+
+    User:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - fullName
+        - initials
+        - role
+      properties:
+        id:
+          type: string
+        fullName:
+          type: string
+        initials:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+
+    Actor:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - displayName
+      properties:
+        type:
+          $ref: '#/components/schemas/ActorType'
+        id:
+          type:
+            - string
+            - 'null'
+        displayName:
+          type: string
+
+    TicketHistoryEvent:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - type
+        - label
+        - createdAt
+        - actor
+      properties:
+        id:
+          type: string
+        type:
+          $ref: '#/components/schemas/TicketHistoryEventType'
+        label:
+          type: string
+        fromStatus:
+          anyOf:
+            - $ref: '#/components/schemas/TicketStatus'
+            - type: 'null'
+        toStatus:
+          anyOf:
+            - $ref: '#/components/schemas/TicketStatus'
+            - type: 'null'
+        createdAt:
+          type: string
+          format: date-time
+        actor:
+          $ref: '#/components/schemas/Actor'
+
+    Ticket:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - number
+        - title
+        - description
+        - aiEnhanced
+        - status
+        - author
+        - createdAt
+        - updatedAt
+        - history
+      properties:
+        id:
+          type: string
+        number:
+          type: string
+        title:
+          type: string
+          description: User-provided or generated short title
+        description:
+          type: string
+        originalDescription:
+          type:
+            - string
+            - 'null'
+          description: Original text before AI enhancement, if applicable
+        aiEnhanced:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/TicketStatus'
+        managerComment:
+          type:
+            - string
+            - 'null'
+        author:
+          $ref: '#/components/schemas/User'
+        groupId:
+          type:
+            - string
+            - 'null'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketHistoryEvent'
+
+    TicketAuthorSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - fullName
+        - initials
+      properties:
+        fullName:
+          type: string
+        initials:
+          type: string
+
+    RelatedTicket:
+      type: object
+      additionalProperties: false
+      required:
+        - ticketId
+        - authorSummary
+        - descriptionExcerpt
+        - createdAt
+        - aiEnhanced
+        - status
+      properties:
+        ticketId:
+          type: string
+        authorSummary:
+          $ref: '#/components/schemas/TicketAuthorSummary'
+        descriptionExcerpt:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        aiEnhanced:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/TicketStatus'
+
+    TicketGroup:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - title
+        - aiSummary
+        - status
+        - ticketCount
+        - lastTicketCreatedAt
+        - relatedTickets
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        aiSummary:
+          type: string
+        status:
+          $ref: '#/components/schemas/TicketStatus'
+        ticketCount:
+          type: integer
+          minimum: 0
+        lastTicketCreatedAt:
+          type: string
+          format: date-time
+        managerComment:
+          type:
+            - string
+            - 'null'
+        relatedTickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedTicket'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    EnhanceTicketDescriptionRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - originalText
+      properties:
+        originalText:
+          type: string
+          minLength: 1
+          maxLength: 10000
+
+    EnhanceTicketDescriptionResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - originalText
+        - enhancedText
+        - aiEnhanced
+        - displayPrefix
+      properties:
+        originalText:
+          type: string
+        enhancedText:
+          type: string
+          description: AI-enhanced text. May already start with the display prefix.
+        aiEnhanced:
+          type: boolean
+          const: true
+        displayPrefix:
+          type: string
+          example: "[AI-enhanced]"
+
+    CreateTicketRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - description
+        - aiEnhanced
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+          maxLength: 10000
+        originalDescription:
+          type:
+            - string
+            - 'null'
+          maxLength: 10000
+        aiEnhanced:
+          type: boolean
+      allOf:
+        - if:
+            properties:
+              aiEnhanced:
+                const: true
+          then:
+            required:
+              - originalDescription
+
+    UpdateTicketGroupStatusRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/TicketStatus'
+
+    SaveTicketGroupCommentRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - managerComment
+      properties:
+        managerComment:
+          type: string
+          minLength: 1
+          maxLength: 5000
+
+    PaginationMeta:
+      type: object
+      additionalProperties: false
+      required:
+        - page
+        - pageSize
+        - totalItems
+        - totalPages
+        - hasNextPage
+        - hasPreviousPage
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+        totalItems:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        hasNextPage:
+          type: boolean
+        hasPreviousPage:
+          type: boolean
+
+    MyTicketsListResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+        - meta
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ticket'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    TicketGroupListResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+        - meta
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketGroup'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    StatusCount:
+      type: object
+      additionalProperties: false
+      required:
+        - open
+        - in_review
+        - resolved
+      properties:
+        open:
+          type: integer
+          minimum: 0
+        in_review:
+          type: integer
+          minimum: 0
+        resolved:
+          type: integer
+          minimum: 0
+
+    TopRepeatedProblem:
+      type: object
+      additionalProperties: false
+      required:
+        - groupId
+        - title
+        - ticketCount
+        - status
+        - lastTicketCreatedAt
+      properties:
+        groupId:
+          type: string
+        title:
+          type: string
+        ticketCount:
+          type: integer
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/TicketStatus'
+        lastTicketCreatedAt:
+          type: string
+          format: date-time
+
+    ManagerAnalyticsSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - groupsByStatus
+        - ticketsByStatus
+        - topRepeatedProblems
+      properties:
+        groupsByStatus:
+          $ref: '#/components/schemas/StatusCount'
+        ticketsByStatus:
+          $ref: '#/components/schemas/StatusCount'
+        topRepeatedProblems:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopRepeatedProblem'
+
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      required:
+        - field
+        - issue
+      properties:
+        field:
+          type: string
+        issue:
+          type: string
+
+    ErrorObject:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - message
+        - details
+        - requestId
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        requestId:
+          type: string
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - error
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorObject'
