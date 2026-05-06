@@ -27,7 +27,6 @@ export function AppLayout({ role }: { role: UserRole }) {
           <div className="brand-mark">P</div>
           <div>
             <strong>Pulse Tickets</strong>
-            <span>MVP workspace</span>
           </div>
         </div>
         <nav>
