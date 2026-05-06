@@ -1,4 +1,4 @@
-import { BarChart3, Home, Inbox, LogOut, PlusCircle, Sparkles, UserCircle } from "lucide-react";
+import { BarChart3, Home, Inbox, LogOut, PlusCircle, UserCircle } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useApp } from "../../app/providers";
 import type { UserRole } from "../../api/types";
@@ -10,8 +10,7 @@ const nav = {
     { to: "/employee/tickets", label: "Мои тикеты", icon: Inbox },
   ],
   manager: [
-    { to: "/manager/groups", label: "AI-пул тикетов", icon: Sparkles },
-    { to: "/manager/groups", label: "Все группы", icon: Inbox },
+    { to: "/manager/groups", label: "Все тикеты", icon: Inbox },
     { to: "/manager/analytics", label: "Аналитика", icon: BarChart3 },
   ],
 };

@@ -54,6 +54,12 @@ export type RelatedTicket = {
     initials: string;
   };
   description?: string;
+  descriptionFull?: string;
+  fullDescription?: string;
+  originalDescription?: string | null;
+  message?: string;
+  text?: string;
+  body?: string;
   descriptionExcerpt: string;
   createdAt: string;
   aiEnhanced: boolean;

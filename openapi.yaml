@@ -874,6 +874,9 @@ components:
           type: string
         authorSummary:
           $ref: '#/components/schemas/TicketAuthorSummary'
+        description:
+          type: string
+          description: Full ticket description. Required by the frontend when related tickets are expanded.
         descriptionExcerpt:
           type: string
         createdAt:
