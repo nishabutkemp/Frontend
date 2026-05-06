@@ -3,6 +3,7 @@ import { useApp } from "../../app/providers";
 import type { TicketGroup, TicketStatus } from "../../api/types";
 import { listManagerTicketGroups } from "../../api/manager";
 import { PageHeader } from "../../components/layout/PageHeader";
+import { Button } from "../../components/ui/Button";
 import { EmptyState, ErrorState, LoadingState } from "../../components/ui/States";
 import { FilterChips } from "../../components/ui/FilterChips";
 import { SearchInput } from "../../components/ui/SearchInput";
@@ -14,12 +15,15 @@ export function ManagerGroupsPage() {
   const [hiddenGroupIds, setHiddenGroupIds] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<TicketStatus | "all">("all");
+  const [showHidden, setShowHidden] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const params = useMemo(() => ({ query, status: status === "all" ? undefined : status }), [query, status]);
   const hiddenStorageKey = `manager:hidden-ticket-groups:${user?.id ?? "anonymous"}`;
   const hiddenGroupSet = useMemo(() => new Set(hiddenGroupIds), [hiddenGroupIds]);
   const visibleGroups = useMemo(() => groups.filter((group) => !hiddenGroupSet.has(group.id)), [groups, hiddenGroupSet]);
+  const hiddenGroups = useMemo(() => groups.filter((group) => hiddenGroupSet.has(group.id)), [groups, hiddenGroupSet]);
+  const displayedGroups = showHidden ? hiddenGroups : visibleGroups;
 
   useEffect(() => {
     try {
@@ -54,11 +58,25 @@ export function ManagerGroupsPage() {
     showToast("Группа скрыта из списка менеджера.");
   };
 
+  const restoreGroup = (groupId: string) => {
+    setHiddenGroupIds((current) => {
+      const next = current.filter((id) => id !== groupId);
+      window.localStorage.setItem(hiddenStorageKey, JSON.stringify(next));
+      return next;
+    });
+    showToast("Группа возвращена в список менеджера.");
+  };
+
   return (
     <div className="page-stack">
       <PageHeader
-        title="Группы тикетов"
+        title={showHidden ? "Скрытые тикеты" : "Группы тикетов"}
         subtitle="Похожие тикеты автоматически объединены в группы, чтобы менеджер быстрее видел повторяющиеся проблемы."
+        aside={
+          <Button variant={showHidden ? "secondary" : "primary"} onClick={() => setShowHidden((value) => !value)}>
+            {showHidden ? "Все группы" : `Скрытые тикеты (${hiddenGroupIds.length})`}
+          </Button>
+        }
       />
       <div className="toolbar">
         <SearchInput value={query} onChange={setQuery} placeholder="Поиск по группам тикетов" label="Поиск по группам тикетов" />
@@ -66,10 +84,22 @@ export function ManagerGroupsPage() {
       </div>
       {loading && <LoadingState />}
       {error && <ErrorState message={error} />}
-      {!loading && !error && visibleGroups.length === 0 && <EmptyState title="Группы не найдены" text="Попробуйте изменить поиск или фильтр." />}
+      {!loading && !error && displayedGroups.length === 0 && (
+        <EmptyState
+          title={showHidden ? "Скрытых групп нет" : "Группы не найдены"}
+          text={showHidden ? "Скрытые группы появятся здесь после нажатия на крестик в карточке." : "Попробуйте изменить поиск или фильтр."}
+        />
+      )}
       {!loading && !error && (
         <div className="group-list">
-          {visibleGroups.map((group) => <TicketGroupCard key={group.id} group={group} onHide={hideGroup} />)}
+          {displayedGroups.map((group) => (
+            <TicketGroupCard
+              key={group.id}
+              group={group}
+              onHide={showHidden ? undefined : hideGroup}
+              onRestore={showHidden ? restoreGroup : undefined}
+            />
+          ))}
         </div>
       )}
     </div>

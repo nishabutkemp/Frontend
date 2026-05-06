@@ -1,10 +1,11 @@
 import { FormEvent, useState } from "react";
-import { KeyRound, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useApp } from "../app/providers";
-import { loginWithCredentials, loginWithToken } from "../api/auth";
+import { loginWithCredentials } from "../api/auth";
 import { getMe } from "../api/me";
 import { Button } from "../components/ui/Button";
+import { FastretroLogo } from "../components/ui/FastretroLogo";
 import { LoadingState } from "../components/ui/States";
 
 export function LoginPage() {
@@ -12,7 +13,6 @@ export function LoginPage() {
   const { user, loading, setAuthenticatedUser, showToast } = useApp();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [token, setToken] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -40,32 +40,12 @@ export function LoginPage() {
     }
   };
 
-  const handleTokenLogin = async () => {
-    if (!token.trim()) {
-      setError("Введите Bearer-токен.");
-      return;
-    }
-    setSubmitting(true);
-    setError(null);
-    try {
-      await loginWithToken(token.trim());
-      await finishLogin();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Не удалось проверить токен.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   return (
     <div className="auth-page">
       <section className="auth-panel">
-        <div className="brand auth-brand">
-          <div className="brand-mark"><span className="brand-letter" style={{ color: "#ffffff" }}>F</span></div>
-          <div>
-            <strong>Fastretro</strong>
-            <span>Вход в рабочее пространство</span>
-          </div>
+        <div className="auth-brand">
+          <FastretroLogo />
+          <span>Вход в рабочее пространство</span>
         </div>
 
         <form className="auth-form" onSubmit={handlePasswordLogin}>
@@ -83,19 +63,6 @@ export function LoginPage() {
             Войти
           </Button>
         </form>
-
-        <div className="auth-divider">или</div>
-
-        <div className="auth-form">
-          <label className="field">
-            Bearer-токен
-            <textarea value={token} onChange={(event) => setToken(event.target.value)} rows={4} />
-          </label>
-          <Button type="button" variant="secondary" onClick={handleTokenLogin} disabled={submitting}>
-            <KeyRound size={18} />
-            Войти по токену
-          </Button>
-        </div>
       </section>
     </div>
   );

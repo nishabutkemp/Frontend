@@ -1,7 +1,8 @@
-import { BarChart3, Home, Inbox, LogOut, PlusCircle, UserCircle } from "lucide-react";
+import { BarChart3, Home, Inbox, LogOut, PlusCircle } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { useApp } from "../../app/providers";
 import type { UserRole } from "../../api/types";
+import { FastretroLogo } from "../ui/FastretroLogo";
 
 const nav = {
   employee: [
@@ -23,10 +24,7 @@ export function AppLayout({ role }: { role: UserRole }) {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark"><span className="brand-letter" style={{ color: "#ffffff" }}>F</span></div>
-          <div>
-            <strong>Fastretro</strong>
-          </div>
+          <FastretroLogo size="small" />
         </div>
         <nav>
           {items.map((item, index) => {
@@ -42,8 +40,10 @@ export function AppLayout({ role }: { role: UserRole }) {
       </aside>
       <div className="workspace">
         <header className="topbar">
-          <button className="icon-button" aria-label="Выйти" title="Выйти" onClick={logout}><LogOut size={19} /></button>
-          <div className="avatar" aria-label="Пользователь"><UserCircle size={22} /></div>
+          <button className="icon-button logout-button" aria-label="Выйти" title="Выйти" onClick={logout}>
+            <LogOut size={19} />
+            <span>Выйти</span>
+          </button>
         </header>
         <main className="content">
           <Outlet />

@@ -1,0 +1,46 @@
+
+> dev
+> vite --host 0.0.0.0 --port 5173
+
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+Port 5175 is in use, trying another one...
+Port 5176 is in use, trying another one...
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m376[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5177[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.8.1.14:[1m5177[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.200.0.22:[1m5177[22m/[39m
+[2m1:36:39 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/AppLayout.tsx[22m
+[2m1:37:15 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LoginPage.tsx[22m
+[2m1:37:30 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:37:42 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/LoginPage.tsx[22m
+[2m1:37:47 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:39:04 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:42:02 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/AppLayout.tsx[22m
+[2m1:42:07 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:45:40 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:45:59 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:46:14 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:46:47 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:47:06 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:48:37 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:49:52 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:51:17 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:55:50 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/manager/TicketGroupCard.tsx[22m
+[2m1:56:09 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/manager/TicketGroupCard.tsx[22m
+[2m1:56:19 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:56:26 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m1:56:50 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m2:01:15 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/manager/TicketGroupCard.tsx[22m
+[2m2:01:26 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m2:01:33 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/ui/Card.tsx[22m
+[2m2:01:58 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m2:02:14 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m2:03:09 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/features/manager/TicketGroupCard.tsx[22m
+[2m2:03:14 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m2:06:33 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m2:06:37 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m2:09:06 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m2:09:28 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m

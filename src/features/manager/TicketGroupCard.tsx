@@ -1,38 +1,64 @@
-import { Layers, Users, X } from "lucide-react";
+import type { KeyboardEvent, MouseEvent } from "react";
+import { RotateCcw, Users, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { TicketGroup } from "../../api/types";
-import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { StatusBadge } from "../../components/ui/StatusBadge";
-import { excerpt, formatDate } from "../../utils/format";
+import { formatDate } from "../../utils/format";
 
-export function TicketGroupCard({ group, onHide }: { group: TicketGroup; onHide: (groupId: string) => void }) {
+export function TicketGroupCard({
+  group,
+  onHide,
+  onRestore,
+}: {
+  group: TicketGroup;
+  onHide?: (groupId: string) => void;
+  onRestore?: (groupId: string) => void;
+}) {
   const navigate = useNavigate();
+  const action = onRestore
+    ? { label: "Вернуть группу", icon: <RotateCcw size={14} />, onClick: () => onRestore(group.id) }
+    : onHide
+      ? { label: "Скрыть группу", icon: <X size={14} />, onClick: () => onHide(group.id) }
+      : null;
+
+  const openGroup = () => navigate(`/manager/groups/${group.id}`);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openGroup();
+    }
+  };
+
+  const handleActionClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    action?.onClick();
+  };
+
   return (
-    <Card className="group-card">
-      <button
-        type="button"
-        className="icon-button group-hide-button"
-        aria-label="Скрыть группу"
-        title="Скрыть группу"
-        onClick={() => onHide(group.id)}
-      >
-        <X size={17} />
-      </button>
-      <div className="group-icon"><Layers size={22} /></div>
+    <Card className="group-card" role="link" tabIndex={0} onClick={openGroup} onKeyDown={handleKeyDown}>
+      {action && (
+        <button
+          type="button"
+          className="icon-button group-hide-button"
+          aria-label={action.label}
+          title={action.label}
+          onClick={handleActionClick}
+        >
+          {action.icon}
+        </button>
+      )}
       <div className="group-content">
         <div className="card-title-row">
           <h3>{group.title}</h3>
-          <StatusBadge status={group.status} />
         </div>
-        <span className="overline">AI-резюме</span>
-        <p>{excerpt(group.aiSummary, 190)}</p>
         <div className="group-meta">
           <span><Users size={15} />Количество тикетов: {group.ticketCount}</span>
           <span>Последнее обращение: {formatDate(group.lastTicketCreatedAt)}</span>
         </div>
       </div>
-      <Button onClick={() => navigate(`/manager/groups/${group.id}`)}>Открыть группу</Button>
+      <StatusBadge status={group.status} />
     </Card>
   );
 }
