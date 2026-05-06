@@ -1,4 +1,5 @@
 import { DEV_ROLE } from "./client";
+import { stripAiEnhancedPrefix } from "../utils/format";
 import type {
   ManagerAnalyticsSummary,
   MyTicketsListResponse,
@@ -29,7 +30,7 @@ let tickets: Ticket[] = [
     number: "#124",
     title: "Ошибка входа в корпоративную почту после смены пароля",
     description:
-      "[AI-enhanced] После смены пароля не удается войти в корпоративную почту. Веб-версия показывает ошибку авторизации, а мобильное приложение постоянно запрашивает пароль.",
+      "После смены пароля не удается войти в корпоративную почту. Веб-версия показывает ошибку авторизации, а мобильное приложение постоянно запрашивает пароль.",
     originalDescription: "Поменял пароль и теперь почта не входит ни на телефоне, ни в браузере.",
     aiEnhanced: true,
     status: "in_review",
@@ -142,7 +143,7 @@ function group(
     .map((ticket) => ({
       ticketId: ticket.id,
       authorSummary: { fullName: ticket.author.fullName, initials: ticket.author.initials },
-      descriptionExcerpt: ticket.description.slice(0, 110),
+      descriptionExcerpt: stripAiEnhancedPrefix(ticket.description).slice(0, 110),
       createdAt: ticket.createdAt,
       aiEnhanced: ticket.aiEnhanced,
       status: ticket.status,
@@ -191,7 +192,7 @@ export const mockApi = {
   enhance: (originalText: string) =>
     wait({
       originalText,
-      enhancedText: `[AI-enhanced] ${originalText.trim()} Описание уточнено: добавлен контекст влияния на работу и ожидаемый результат для менеджера.`,
+      enhancedText: `${originalText.trim()} Описание уточнено: добавлен контекст влияния на работу и ожидаемый результат для менеджера.`,
       aiEnhanced: true as const,
       displayPrefix: "[AI-enhanced]",
     }),
@@ -200,8 +201,8 @@ export const mockApi = {
     const ticket: Ticket = {
       id: `tkt_${Date.now()}`,
       number: `#${next}`,
-      title: input.title || input.description.replace("[AI-enhanced]", "").trim().slice(0, 72),
-      description: input.description,
+      title: input.title || stripAiEnhancedPrefix(input.description).slice(0, 72),
+      description: stripAiEnhancedPrefix(input.description),
       originalDescription: input.originalDescription ?? null,
       aiEnhanced: input.aiEnhanced,
       status: "open",

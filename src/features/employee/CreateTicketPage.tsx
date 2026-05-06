@@ -9,6 +9,7 @@ import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { ErrorState } from "../../components/ui/States";
 import { TextArea } from "../../components/ui/TextArea";
+import { stripAiEnhancedPrefix } from "../../utils/format";
 import { AiReviewPanel } from "./AiReviewPanel";
 
 export function CreateTicketPage() {
@@ -32,7 +33,7 @@ export function CreateTicketPage() {
     try {
       const response = await enhanceTicketDescription(description.trim());
       setOriginal(response.originalText);
-      setImproved(response.enhancedText);
+      setImproved(stripAiEnhancedPrefix(response.enhancedText));
       setIsReview(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Не удалось улучшить описание.");
@@ -46,7 +47,7 @@ export function CreateTicketPage() {
     setError(null);
     try {
       const ticket = await createTicket({
-        description: text.trim(),
+        description: stripAiEnhancedPrefix(text),
         originalDescription,
         aiEnhanced,
       });

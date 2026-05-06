@@ -9,7 +9,7 @@ import { Card } from "../../components/ui/Card";
 import { Badge, StatusBadge } from "../../components/ui/StatusBadge";
 import { EmptyState, ErrorState, LoadingState } from "../../components/ui/States";
 import { Timeline } from "../../components/ui/Timeline";
-import { formatDate } from "../../utils/format";
+import { formatDate, stripAiEnhancedPrefix } from "../../utils/format";
 
 export function TicketDetailPage() {
   const { ticketId = "" } = useParams();
@@ -49,7 +49,7 @@ export function TicketDetailPage() {
           <h3>Описание</h3>
           {ticket.aiEnhanced && <Badge>AI-enhanced</Badge>}
         </div>
-        <p className="preserve">{ticket.description}</p>
+        <p className="preserve">{stripAiEnhancedPrefix(ticket.description)}</p>
       </Card>
       <Card>
         <h3>Комментарий менеджера</h3>

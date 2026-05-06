@@ -23,3 +23,7 @@ export function formatDate(value: string): string {
 export function excerpt(value: string, max = 140): string {
   return value.length > max ? `${value.slice(0, max).trim()}...` : value;
 }
+
+export function stripAiEnhancedPrefix(value: string): string {
+  return value.replace(/^\s*\[AI-enhanced\]\s*/i, "").trim();
+}
