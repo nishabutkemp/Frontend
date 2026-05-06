@@ -21,6 +21,7 @@ export function ManagerGroupDetailPage() {
   const [group, setGroup] = useState<TicketGroup | null>(null);
   const [comment, setComment] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<TicketStatus>("open");
+  const [showAllTickets, setShowAllTickets] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,9 +105,11 @@ export function ManagerGroupDetailPage() {
       <Card>
         <div className="card-title-row">
           <h3>Связанные тикеты</h3>
-          <Button variant="ghost">Показать все {group.ticketCount} тикетов</Button>
+          <Button variant="ghost" onClick={() => setShowAllTickets((value) => !value)}>
+            {showAllTickets ? "Свернуть тикеты" : `Показать все ${group.ticketCount} тикетов`}
+          </Button>
         </div>
-        <RelatedTicketsList tickets={group.relatedTickets} />
+        <RelatedTicketsList tickets={group.relatedTickets} expanded={showAllTickets} />
       </Card>
       <Card>
         <ManagerCommentForm value={comment} onChange={setComment} onSave={saveComment} disabled={saving} />

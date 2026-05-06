@@ -9,7 +9,6 @@ export function TicketListItem({ ticket }: { ticket: Ticket }) {
     <Link className="list-item" to={`/employee/tickets/${ticket.id}`}>
       <div className="list-main">
         <div className="meta-row">
-          <strong>{ticket.number}</strong>
           <span>{formatDate(ticket.createdAt)}</span>
           {ticket.aiEnhanced && <Badge>AI-enhanced</Badge>}
         </div>

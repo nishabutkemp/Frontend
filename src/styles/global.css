@@ -74,6 +74,11 @@ a {
   font-weight: 800;
 }
 
+.brand-mark span {
+  display: block;
+  transform: skewX(-10deg);
+}
+
 .brand strong,
 .brand span {
   display: block;
@@ -605,7 +610,16 @@ a {
   color: var(--blue);
 }
 
-.related-row,
+.related-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
 .analytics-row {
   display: grid;
   grid-template-columns: auto 1fr auto auto;
@@ -616,12 +630,20 @@ a {
   border-radius: 8px;
 }
 
+.related-row.expanded {
+  align-items: start;
+}
+
 .related-row p,
 .related-row span,
 .analytics-row p {
   margin: 4px 0 0;
   color: var(--muted);
   font-size: 14px;
+}
+
+.related-row .related-description {
+  color: var(--text);
 }
 
 .metrics-grid {

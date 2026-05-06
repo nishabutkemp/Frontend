@@ -1,17 +1,17 @@
 openapi: 3.1.0
 info:
-  title: Pulse Tickets API
+  title: Fastretro API
   version: 1.0.0
   summary: MVP API for private employee tickets and AI-grouped manager workflows
   description: |
-    OpenAPI contract for Pulse Tickets MVP.
+    OpenAPI contract for Fastretro MVP.
     All tickets are private by default. Employees can access only their own tickets.
     Managers work with AI-generated ticket groups and can update group status and manager comment,
     which are reflected on related tickets.
 servers:
-  - url: https://api.pulsetickets.internal/v1
+  - url: https://api.fastretro.internal/v1
     description: Production
-  - url: https://staging-api.pulsetickets.internal/v1
+  - url: https://staging-api.fastretro.internal/v1
     description: Staging
 security:
   - BearerAuth: []

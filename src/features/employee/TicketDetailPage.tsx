@@ -33,7 +33,7 @@ export function TicketDetailPage() {
   return (
     <div className="page-stack">
       <BackButton>Назад к моим тикетам</BackButton>
-      <PageHeader title={`Тикет ${ticket.number}`} subtitle="Просмотр статуса обращения и комментария менеджера." />
+      <PageHeader title="Тикет" subtitle="Просмотр статуса обращения и комментария менеджера." />
       <Card>
         <div className="detail-header">
           <div>

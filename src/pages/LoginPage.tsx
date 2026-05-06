@@ -61,9 +61,9 @@ export function LoginPage() {
     <div className="auth-page">
       <section className="auth-panel">
         <div className="brand auth-brand">
-          <div className="brand-mark">P</div>
+          <div className="brand-mark"><span>F</span></div>
           <div>
-            <strong>Pulse Tickets</strong>
+            <strong>Fastretro</strong>
             <span>Вход в рабочее пространство</span>
           </div>
         </div>

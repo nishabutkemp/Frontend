@@ -2,15 +2,15 @@ import type { RelatedTicket } from "../../api/types";
 import { Badge, StatusBadge } from "../../components/ui/StatusBadge";
 import { formatDate, stripAiEnhancedPrefix } from "../../utils/format";
 
-export function RelatedTicketsList({ tickets }: { tickets: RelatedTicket[] }) {
+export function RelatedTicketsList({ tickets, expanded = false }: { tickets: RelatedTicket[]; expanded?: boolean }) {
   return (
     <div className="related-list">
       {tickets.map((ticket) => (
-        <div className="related-row" key={ticket.ticketId}>
-          <div className="mini-avatar">{ticket.authorSummary.initials}</div>
+        <div className={expanded ? "related-row expanded" : "related-row"} key={ticket.ticketId}>
           <div>
-            <strong>#{ticket.ticketId.replace("tkt_", "")} · {ticket.authorSummary.fullName}</strong>
-            <p>{stripAiEnhancedPrefix(ticket.descriptionExcerpt)}</p>
+            <p className={expanded ? "related-description preserve" : undefined}>
+              {stripAiEnhancedPrefix(ticket.description ?? ticket.descriptionExcerpt)}
+            </p>
             <span>{formatDate(ticket.createdAt)}</span>
           </div>
           {ticket.aiEnhanced && <Badge>AI</Badge>}

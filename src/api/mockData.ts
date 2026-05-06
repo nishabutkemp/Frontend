@@ -143,6 +143,7 @@ function group(
     .map((ticket) => ({
       ticketId: ticket.id,
       authorSummary: { fullName: ticket.author.fullName, initials: ticket.author.initials },
+      description: stripAiEnhancedPrefix(ticket.description),
       descriptionExcerpt: stripAiEnhancedPrefix(ticket.description).slice(0, 110),
       createdAt: ticket.createdAt,
       aiEnhanced: ticket.aiEnhanced,
@@ -161,6 +162,7 @@ function group(
       {
         ticketId: `${id}_related`,
         authorSummary: { fullName: "Мария Кузнецова", initials: "МК" },
+        description: aiSummary,
         descriptionExcerpt: aiSummary,
         createdAt: lastTicketCreatedAt,
         aiEnhanced: false,
