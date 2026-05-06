@@ -61,7 +61,7 @@ export function LoginPage() {
     <div className="auth-page">
       <section className="auth-panel">
         <div className="brand auth-brand">
-          <div className="brand-mark"><span>F</span></div>
+          <div className="brand-mark"><span className="brand-letter" style={{ color: "#ffffff" }}>F</span></div>
           <div>
             <strong>Fastretro</strong>
             <span>Вход в рабочее пространство</span>

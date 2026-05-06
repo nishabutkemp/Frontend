@@ -23,7 +23,7 @@ export function AppLayout({ role }: { role: UserRole }) {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark"><span>F</span></div>
+          <div className="brand-mark"><span className="brand-letter" style={{ color: "#ffffff" }}>F</span></div>
           <div>
             <strong>Fastretro</strong>
           </div>

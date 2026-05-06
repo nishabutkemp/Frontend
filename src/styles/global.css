@@ -74,7 +74,7 @@ a {
   font-weight: 800;
 }
 
-.brand .brand-mark span {
+.brand .brand-mark .brand-letter {
   display: block;
   color: #ffffff;
   transform: skewX(-10deg);
@@ -94,6 +94,10 @@ a {
 .timeline p,
 .analytics-row p {
   color: var(--muted);
+}
+
+.brand-mark .brand-letter {
+  color: #ffffff;
 }
 
 .sidebar nav {
