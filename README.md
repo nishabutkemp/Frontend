@@ -35,7 +35,7 @@ docker build -t pulse-tickets-frontend .
 Run container:
 
 ```bash
-docker run -d --name pulse-tickets-frontend -p 8080:80 \
+docker run -d --name pulse-tickets-frontend -p 80:80 \
   -e VITE_API_BASE_URL=http://2.27.54.78:8000/v1 \
   -e VITE_AUTH_LOGIN_PATH=/auth/login \
   -e VITE_USE_MOCKS=false \

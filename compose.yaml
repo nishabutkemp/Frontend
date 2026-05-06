@@ -4,7 +4,7 @@ services:
       context: .
     container_name: pulse-tickets-frontend
     ports:
-      - "8080:80"
+      - "80:80"
     environment:
       VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://2.27.54.78:8000/v1}
       VITE_AUTH_LOGIN_PATH: ${VITE_AUTH_LOGIN_PATH:-/auth/login}
