@@ -29,7 +29,7 @@ export function AnalyticsPage() {
 
   return (
     <div className="page-stack">
-      <PageHeader title="Аналитика" subtitle="Краткая сводка по AI-группам и повторяющимся проблемам." />
+      <PageHeader title="Аналитика" subtitle="Краткая сводка по повторяющимся проблемам." />
       <div className="metrics-grid">
         <Metric title="Всего групп" value={totalGroups} />
         <Metric title="Всего тикетов" value={totalTickets} />
