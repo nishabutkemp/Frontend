@@ -100,10 +100,10 @@ let tickets: Ticket[] = [
 ];
 
 let groups: TicketGroup[] = [
-  group("grp_mail", "Ошибка входа в корпоративную почту после смены пароля", "Несколько сотрудников не могут войти в почту после смены пароля. Проблема похожа на задержку синхронизации учетных данных.", "in_review", 3, "2026-05-06T11:30:00Z", "Проверяем синхронизацию пароля и настройки почтового шлюза."),
-  group("grp_vpn", "VPN отключается в течение дня", "Пользователи сообщают о повторяющихся разрывах VPN, из-за которых теряется доступ к внутренним инструментам.", "open", 6, "2026-05-06T10:05:00Z", null),
-  group("grp_monitor", "Внешний монитор не определяется после обновления", "После обновления системы часть ноутбуков перестала распознавать мониторы через USB-C док-станции.", "resolved", 4, "2026-05-04T15:20:00Z", "Обновили драйвер док-станции. Подключение восстановлено."),
-  group("grp_onboarding", "Нет доступа к онбординг-материалам", "Новые сотрудники не видят чеклист первого дня и базу знаний для онбординга.", "open", 2, "2026-05-02T08:45:00Z", null),
+  group("grp_mail", "Проблемы входа в почту", "Несколько сотрудников не могут войти в почту после смены пароля. Проблема похожа на задержку синхронизации учетных данных.", "in_review", 3, "2026-05-06T11:30:00Z", "Проверяем синхронизацию пароля и настройки почтового шлюза."),
+  group("grp_vpn", "Сбои VPN", "Пользователи сообщают о повторяющихся разрывах VPN, из-за которых теряется доступ к внутренним инструментам.", "open", 6, "2026-05-06T10:05:00Z", null),
+  group("grp_monitor", "Монитор не определяется", "После обновления системы часть ноутбуков перестала распознавать мониторы через USB-C док-станции.", "resolved", 4, "2026-05-04T15:20:00Z", "Обновили драйвер док-станции. Подключение восстановлено."),
+  group("grp_onboarding", "Доступ к онбордингу", "Новые сотрудники не видят чеклист первого дня и базу знаний для онбординга.", "open", 2, "2026-05-02T08:45:00Z", null),
 ];
 
 function history(
@@ -189,6 +189,16 @@ function wait<T>(value: T): Promise<T> {
   return new Promise((resolve) => window.setTimeout(() => resolve(value), 350));
 }
 
+function makeAiTitle(value: string): string {
+  const words = stripAiEnhancedPrefix(value)
+    .replace(/[^\p{L}\p{N}\s-]/gu, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 5);
+  return words.join(" ") || "Новая проблема";
+}
+
 export const mockApi = {
   getMe: () => wait(DEV_ROLE === "manager" ? managerUser : employeeUser),
   enhance: (originalText: string) =>
@@ -203,7 +213,7 @@ export const mockApi = {
     const ticket: Ticket = {
       id: `tkt_${Date.now()}`,
       number: `#${next}`,
-      title: input.title || stripAiEnhancedPrefix(input.description).slice(0, 72),
+      title: input.title || makeAiTitle(input.description),
       description: stripAiEnhancedPrefix(input.description),
       originalDescription: input.originalDescription ?? null,
       aiEnhanced: input.aiEnhanced,

@@ -10,7 +10,7 @@ import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { EmptyState, ErrorState, LoadingState } from "../../components/ui/States";
-import { statusOptions } from "../../utils/format";
+import { formatTicketGroupTitle, statusOptions } from "../../utils/format";
 import { ManagerCommentForm } from "./ManagerCommentForm";
 import { RelatedTicketsList } from "./RelatedTicketsList";
 
@@ -79,7 +79,7 @@ export function ManagerGroupDetailPage() {
   return (
     <div className="page-stack">
       <BackButton>Назад к группам тикетов</BackButton>
-      <PageHeader title={`Группа тикетов: ${group.title}`} subtitle="Похожие тикеты объединены в одну группу для обработки менеджером." />
+      <PageHeader title={formatTicketGroupTitle(group.title)} />
       {error && <ErrorState message={error} />}
       <div className="detail-grid">
         <Card className="summary-card">

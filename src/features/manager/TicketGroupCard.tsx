@@ -3,17 +3,7 @@ import { CalendarDays, RotateCcw, Users, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { TicketGroup } from "../../api/types";
 import { Card } from "../../components/ui/Card";
-import { formatDate } from "../../utils/format";
-
-const trailingShortWords = new Set(["в", "во", "на", "к", "ко", "по", "после", "для", "из", "с", "со", "при", "через"]);
-
-function shortTopicTitle(title: string) {
-  const words = title.trim().split(/\s+/).slice(0, 5);
-  while (words.length > 1 && trailingShortWords.has(words[words.length - 1].toLowerCase())) {
-    words.pop();
-  }
-  return words.join(" ");
-}
+import { formatDate, formatTicketGroupTitle } from "../../utils/format";
 
 export function TicketGroupCard({
   group,
@@ -32,7 +22,7 @@ export function TicketGroupCard({
       : null;
 
   const openGroup = () => navigate(`/manager/groups/${group.id}`);
-  const topicTitle = shortTopicTitle(group.title);
+  const topicTitle = formatTicketGroupTitle(group.title);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -61,7 +51,7 @@ export function TicketGroupCard({
         </button>
       )}
       <div className="group-content">
-        <h3 title={group.title}>{topicTitle}</h3>
+        <h3 title={topicTitle}>{topicTitle}</h3>
         <div className="group-meta">
           <span><Users size={13} />{group.ticketCount} тикетов</span>
           <span><CalendarDays size={13} />{formatDate(group.lastTicketCreatedAt)}</span>
