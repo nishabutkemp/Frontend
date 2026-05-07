@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { EyeOff, Ticket } from "lucide-react";
 import { useApp } from "../../app/providers";
 import type { TicketGroup, TicketStatus } from "../../api/types";
 import { listManagerTicketGroups } from "../../api/manager";
@@ -23,7 +24,14 @@ export function ManagerGroupsPage() {
   const hiddenGroupSet = useMemo(() => new Set(hiddenGroupIds), [hiddenGroupIds]);
   const visibleGroups = useMemo(() => groups.filter((group) => !hiddenGroupSet.has(group.id)), [groups, hiddenGroupSet]);
   const hiddenGroups = useMemo(() => groups.filter((group) => hiddenGroupSet.has(group.id)), [groups, hiddenGroupSet]);
-  const displayedGroups = showHidden ? hiddenGroups : visibleGroups;
+  const displayedGroups = useMemo(
+    () =>
+      [...(showHidden ? hiddenGroups : visibleGroups)].sort(
+        (firstGroup, secondGroup) =>
+          new Date(secondGroup.lastTicketCreatedAt).getTime() - new Date(firstGroup.lastTicketCreatedAt).getTime(),
+      ),
+    [hiddenGroups, showHidden, visibleGroups],
+  );
 
   useEffect(() => {
     try {
@@ -73,8 +81,8 @@ export function ManagerGroupsPage() {
         title={showHidden ? "Скрытые тикеты" : "Группы тикетов"}
         subtitle="Похожие тикеты автоматически объединены в группы, чтобы менеджер быстрее видел повторяющиеся проблемы."
         aside={
-          <Button variant={showHidden ? "secondary" : "primary"} onClick={() => setShowHidden((value) => !value)}>
-            {showHidden ? "Все группы" : `Скрытые тикеты (${hiddenGroupIds.length})`}
+          <Button className="manager-groups-toggle" variant="secondary" onClick={() => setShowHidden((value) => !value)}>
+            {showHidden ? <><Ticket size={17} />К тикетам</> : <><EyeOff size={17} />Скрытые тикеты ({hiddenGroupIds.length})</>}
           </Button>
         }
       />

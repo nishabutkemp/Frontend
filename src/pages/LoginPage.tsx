@@ -1,8 +1,9 @@
 import { FormEvent, useState } from "react";
-import { LogIn } from "lucide-react";
+import { BriefcaseBusiness, HardHat, LogIn } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useApp } from "../app/providers";
-import { loginWithCredentials } from "../api/auth";
+import { loginAsDevEmployee, loginAsDevManager, loginWithCredentials } from "../api/auth";
+import type { User } from "../api/types";
 import { getMe } from "../api/me";
 import { Button } from "../components/ui/Button";
 import { FastretroLogo } from "../components/ui/FastretroLogo";
@@ -15,12 +16,13 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [devSubmitting, setDevSubmitting] = useState<"employee" | "manager" | null>(null);
 
   if (loading) return <LoadingState />;
   if (user) return <Navigate to={user.role === "manager" ? "/manager/groups" : "/employee"} replace />;
 
-  const finishLogin = async () => {
-    const currentUser = await getMe();
+  const finishLogin = async (userFromToken?: User) => {
+    const currentUser = userFromToken ?? (await getMe());
     setAuthenticatedUser(currentUser);
     showToast("Вход выполнен");
     navigate(currentUser.role === "manager" ? "/manager/groups" : "/employee", { replace: true });
@@ -37,6 +39,19 @@ export function LoginPage() {
       setError(err instanceof Error ? err.message : "Не удалось войти.");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDevLogin = async (role: "employee" | "manager") => {
+    setDevSubmitting(role);
+    setError(null);
+    try {
+      const response = role === "employee" ? await loginAsDevEmployee() : await loginAsDevManager();
+      await finishLogin(response.user);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Не удалось войти через dev-auth.");
+    } finally {
+      setDevSubmitting(null);
     }
   };
 
@@ -63,6 +78,20 @@ export function LoginPage() {
             Войти
           </Button>
         </form>
+
+        <div className="dev-auth-block">
+          <span>Dev auth</span>
+          <div className="dev-auth-actions">
+            <Button type="button" variant="secondary" onClick={() => void handleDevLogin("employee")} disabled={submitting || devSubmitting !== null}>
+              <HardHat size={17} />
+              {devSubmitting === "employee" ? "Signing in..." : "Continue as employee"}
+            </Button>
+            <Button type="button" variant="secondary" onClick={() => void handleDevLogin("manager")} disabled={submitting || devSubmitting !== null}>
+              <BriefcaseBusiness size={17} />
+              {devSubmitting === "manager" ? "Signing in..." : "Continue as manager"}
+            </Button>
+          </div>
+        </div>
       </section>
     </div>
   );

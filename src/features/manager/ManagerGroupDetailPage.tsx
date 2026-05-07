@@ -84,8 +84,10 @@ export function ManagerGroupDetailPage() {
       <div className="detail-grid">
         <Card className="summary-card">
           <div className="metric-inline"><Users size={18} />{group.ticketCount} тикетов</div>
-          <StatusBadge status={group.status} />
-          <Button variant="secondary" onClick={changeStatus} disabled={saving || selectedStatus === group.status}>Сохранить статус</Button>
+          <div className="summary-status-actions">
+            <StatusBadge status={group.status} className="summary-status-badge" />
+            <Button variant="secondary" onClick={changeStatus} disabled={saving || selectedStatus === group.status}>Сохранить статус</Button>
+          </div>
         </Card>
         <Card>
           <h3>Новый статус группы</h3>
@@ -103,6 +105,10 @@ export function ManagerGroupDetailPage() {
           </div>
         </Card>
       </div>
+      <Card>
+        <h3>Описание проблемы</h3>
+        <p className="preserve">{group.aiSummary}</p>
+      </Card>
       <Card>
         <div className="card-title-row">
           <h3>Связанные тикеты</h3>
