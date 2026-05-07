@@ -665,6 +665,9 @@ a {
   grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
   aspect-ratio: 372 / 261;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
   height: auto;
   padding: var(--group-note-padding);
   cursor: pointer;
@@ -1236,3 +1239,38 @@ a {
     padding-left: 20px;
   }
 }
+
+
+@media (max-width: 640px) {
+  .group-list {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    justify-items: center;
+  }
+
+  .group-card {
+    width: 100%;
+    max-width: 360px;
+
+    aspect-ratio: 372 / 261;
+
+    padding: 28px 26px 24px;
+  }
+
+  .group-content {
+    padding-left: 14px;
+  }
+
+  .group-card h3 {
+    font-size: 14px;
+    line-height: 1.2;
+    padding-right: 18px;
+  }
+
+  .group-hide-button {
+    top: 22px;
+    right: 24px;
+  }
+}
+
+
