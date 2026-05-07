@@ -651,14 +651,10 @@ a {
 }
 
 .group-list {
-  --group-note-gap: calc(100% / 29);
-  --group-note-row-gap: calc(var(--group-note-gap) + 22px);
   display: grid;
-  grid-template-columns: repeat(4, calc(var(--group-note-gap) * 6));
-  column-gap: var(--group-note-gap);
-  row-gap: var(--group-note-row-gap);
-  align-items: start;
-  padding: var(--group-note-gap);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 16px;
 }
 
 .group-card {
