@@ -1220,3 +1220,19 @@ a {
     display: none;
   }
 }
+
+
+@media (max-width: 640px) {
+  .group-list {
+    grid-template-columns: 1fr;
+  }
+
+  .group-card {
+    aspect-ratio: auto;
+    min-height: 261px;
+  }
+
+  .group-content {
+    padding-left: 20px;
+  }
+}
