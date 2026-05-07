@@ -100,10 +100,11 @@ export function ManagerGroupsPage() {
       )}
       {!loading && !error && (
         <div className="group-list">
-          {displayedGroups.map((group) => (
+          {displayedGroups.map((group, index) => (
             <TicketGroupCard
               key={group.id}
               group={group}
+              imageIndex={index}
               onHide={showHidden ? undefined : hideGroup}
               onRestore={showHidden ? restoreGroup : undefined}
             />

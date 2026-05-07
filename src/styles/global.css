@@ -54,6 +54,9 @@ a {
   background: #FFFFFF;
   border-right: 1px solid var(--border);
   padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .brand {
@@ -142,6 +145,22 @@ a {
 .sidebar nav {
   display: grid;
   gap: 8px;
+}
+
+.sidebar-bottom-image {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 280px;
+  max-width: none;
+  height: auto;
+  margin: 0;
+  display: block;
+  object-fit: contain;
+  object-position: bottom center;
+  pointer-events: none;
+  user-select: none;
 }
 
 .nav-link {
@@ -623,13 +642,14 @@ a {
 }
 
 .group-card {
-  --group-note-padding: 18px;
+  --group-note-padding: 0 30px 24px;
   position: relative;
   min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
-  height: 116px;
+  aspect-ratio: 372 / 261;
+  height: auto;
   padding: var(--group-note-padding);
   cursor: pointer;
   overflow: visible;
@@ -637,12 +657,12 @@ a {
 
 .group-card:hover {
   transform: translateY(-2px) rotate(0deg);
-  box-shadow: 0 14px 28px rgba(7, 27, 68, 0.11);
 }
 
 .group-card h3 {
   margin: 0;
   padding-right: 24px;
+  align-self: start;
   font-size: 15px;
   line-height: 1.18;
   letter-spacing: 0;
@@ -654,15 +674,17 @@ a {
 
 .group-content {
   min-width: 0;
+  height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 8px;
+  padding-left: 20px;
 }
 
 .group-hide-button {
   position: absolute;
-  top: 9px;
-  right: 9px;
+  top: 18px;
+  right: 20px;
   width: 22px;
   height: 22px;
   min-height: 0;
@@ -703,26 +725,43 @@ a {
 .group-note {
   --note-rotate: 0deg;
   border: 0;
-  border-radius: 4px 9px 5px 8px;
-  box-shadow: 0 8px 18px rgba(7, 27, 68, 0.09);
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
   transform-origin: 50% 20%;
   transform: rotate(var(--note-rotate));
   transition: transform 0.16s ease, box-shadow 0.16s ease;
 }
 
 .group-note.status-open {
-  background: #FFFFFF;
+  background: transparent;
   color: var(--text);
 }
 
 .group-note.status-in_review {
-  background: #FFFFFF;
+  background: transparent;
   color: var(--text);
 }
 
 .group-note.status-resolved {
-  background: #FFFFFF;
+  background: transparent;
   color: var(--text);
+}
+
+.group-note-image {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.group-card > :not(.group-note-image) {
+  position: relative;
+  z-index: 1;
 }
 
 .group-note.status-open .group-note-pin {
@@ -1083,11 +1122,16 @@ a {
     padding: 14px;
     border-right: 0;
     border-bottom: 1px solid var(--border);
+    min-height: 0;
   }
 
   .sidebar nav {
     grid-auto-flow: column;
     overflow-x: auto;
+  }
+
+  .sidebar-bottom-image {
+    display: none;
   }
 
   .brand {

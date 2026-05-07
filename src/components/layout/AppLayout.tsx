@@ -3,6 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useApp } from "../../app/providers";
 import type { UserRole } from "../../api/types";
 import { FastretroLogo } from "../ui/FastretroLogo";
+import eiffelTowerImage from "../../../image_2026-05-07_15-13-08.png";
 
 const nav = {
   employee: [
@@ -37,6 +38,7 @@ export function AppLayout({ role }: { role: UserRole }) {
             );
           })}
         </nav>
+        <img className="sidebar-bottom-image" src={eiffelTowerImage} alt="" aria-hidden="true" />
       </aside>
       <div className="workspace">
         <header className="topbar">
