@@ -49,6 +49,7 @@ export function TicketGroupCard({
   return (
     <Card className={`group-card group-note status-${group.status}`} role="link" tabIndex={0} onClick={openGroup} onKeyDown={handleKeyDown}>
       <img className="group-note-image" src={noteImages[imageIndex % noteImages.length]} alt="" aria-hidden="true" />
+      <span className="group-note-pin" aria-hidden="true" />
       {action && (
         <button
           type="button"

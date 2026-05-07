@@ -4,6 +4,7 @@ import { useApp } from "../../app/providers";
 import type { UserRole } from "../../api/types";
 import { FastretroLogo } from "../ui/FastretroLogo";
 import eiffelTowerImage from "../../../image_2026-05-07_15-13-08.png";
+import themeImage from "../../../theme.png";
 
 const nav = {
   employee: [
@@ -23,6 +24,7 @@ export function AppLayout({ role }: { role: UserRole }) {
 
   return (
     <div className="app-shell">
+      <img className="app-theme-background" src={themeImage} alt="" aria-hidden="true" />
       <aside className="sidebar">
         <div className="brand">
           <FastretroLogo size="small" />
